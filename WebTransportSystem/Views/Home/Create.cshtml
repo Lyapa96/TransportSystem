@@ -1,0 +1,54 @@
+﻿@using System.Globalization
+@model List<Passenger>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_NewLayout";
+}
+<div style="text-align: center">
+    <h2>Создание начальных условий</h2>
+    @using (Html.BeginForm("ShowNew", "Home", FormMethod.Post))
+    {
+        for (var i = 0; i < 3; i++)
+        {
+            <div class="myrow">
+                @{
+                    for (var j = 0 + i * 3; j < 3 + i * 3; j++)
+                    {
+                        var passenger = Model[j];
+                        <input type="hidden" value="@passenger.Number" name="newPassengers[@j].Number"/>
+                        <div class="cell">
+                            <H4>
+                                Пассажир №@passenger.Number
+                            </H4>
+                            <p style="float: right; margin-right: 5px">
+                                Удовлетворенность: <input type="number" name="newPassengers[@j].Satisfaction" value="@passenger.Satisfaction.ToString(CultureInfo.InvariantCulture).Replace(',', '.')" step="0.01" min="0" max="1"/>
+                            </p>
+                            <p style="float: right; margin-right: 5px">
+                                Качество услуг: <input type="number" name="newPassengers[@j].QualityCoefficient" value="@passenger.QualityCoefficient.ToString(CultureInfo.InvariantCulture).Replace(',', '.')" step="0.01" min="0" max="1"/>
+                            </p>
+                            <p>
+                                <select name="newPassengers[@j].TransportType">
+                                    <option disabled>Выберите транспорт</option>
+                                    @if (passenger.TransportType == TransportType.Bus)
+                                    {
+                                        <option value="@TransportType.Car">Машина</option>
+                                        <option selected value="@TransportType.Bus">Автобус</option>
+                                    }
+                                    else
+                                    {
+                                        <option selected value="@TransportType.Car">Машина</option>
+                                        <option value="@TransportType.Bus">Автобус</option>
+                                    }
+                                </select>
+                            </p>
+                        </div>
+                    }
+                }
+            </div>
+        }
+
+
+        <input class="btn btn-success" type="submit" value="Отправить"/>
+    }
+</div>

@@ -1,0 +1,64 @@
+﻿@model Passenger[]
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_NewLayout";
+}
+
+<div style="text-align: center">
+    <h2>Текущий ход</h2>
+    <div>
+        @{
+            for (var i = 0; i < 3; i++)
+            {
+                <div class="myrow">
+                    @{
+                        for (var j = 0 + i * 3; j < 3 + i * 3; j++)
+                        {
+                            var passenger = Model[j];
+                            <div class="cell">
+                                <H4>
+                                    Пассажир №@passenger.Number
+                                </H4>
+                                <p>
+                                   @{
+                                       var satisfactionLength = passenger.Satisfaction.ToString().Length;
+                                       var qualityCoefficientLength = passenger.QualityCoefficient.ToString().Length;
+                                   }
+                                    Удовлетворенность: <strong>@passenger.Satisfaction.ToString().Substring(0, satisfactionLength > 4 ? 4 : satisfactionLength)</strong>
+                                    <br/>
+                                    Качество услуг: <strong>@passenger.QualityCoefficient.ToString().Substring(0, qualityCoefficientLength > 4 ? 4 : qualityCoefficientLength)</strong>
+                                </p>
+                                @if (passenger.TransportType == 0)
+                                {
+                                    <img class="automobile" src="~/images/car.png" alt="машина"/>
+                                }
+                                else
+                                {
+                                    <img class="automobile" src="~/images/bus.png" alt="автобус"/>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            }
+        }
+        @using (Html.BeginForm("MakeNextStep", "Home", FormMethod.Post))
+        {
+            for (var i = 0; i < 9; i++)
+            {
+                <input type="hidden" value="@Model[i].TransportType" name="passengers[@i].TransportType"/>
+                <input type="hidden" value="@Model[i].Number" name="passengers[@i].Number"/>
+                <input type="hidden" value="@Model[i].QualityCoefficient" name="passengers[@i].QualityCoefficient"/>
+                <input type="hidden" value="@Model[i].Satisfaction" name="passengers[@i].Satisfaction"/>
+                for (int j = 0; j < @Model[i].AllQualityCoefficients.Count; j++)
+                {
+                    <input type="hidden" value="@Model[i].AllQualityCoefficients[j]" name="passengers[@i].AllQualityCoefficients[@j]" />
+                }
+            }
+
+
+            <input class="btn btn-success" type="submit" value="Следующая итерация"/>
+        }
+    </div>
+</div>
