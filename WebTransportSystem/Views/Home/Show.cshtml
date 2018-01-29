@@ -13,13 +13,22 @@
         }
     }
 
+    var firstStep = true;
+    var lastPassengers = null;
+
     function getNextStep(form) {
         var count = form.count.value;
         var delay = form.delay.value * 1000;
         @{
             var jsonPassengers = JsonConvert.SerializeObject(Model).Replace("\"", "");
         }
-        getAjaxRequest(count, delay, { passengers: @jsonPassengers });
+        if (firstStep) {
+            getAjaxRequest(count, delay, { passengers: @jsonPassengers });
+            firstStep = false;
+        } else {
+            getAjaxRequest(count, delay, lastPassengers);
+        }
+
     };
 
     function getAjaxRequest(count, delay, newData) {
@@ -33,14 +42,11 @@
             data: newData,
             success: function(data) {
                 sleep(delay);
-                //$('#lo').html(`<h1>${data}</h1>`);
                 var passengers = data.passengers;
                 var view = data.view;
                 $('#lo').html(view);
-                var newD = { passengers: passengers };
-                getAjaxRequest(count, delay, newD);
-                //var returnedstring = data.d;
-                //var jsondata = $.parseJSON(data.d);//if you want your data in json
+                lastPassengers = { passengers: passengers };
+                getAjaxRequest(count, delay, lastPassengers);
             }
         });
     }
