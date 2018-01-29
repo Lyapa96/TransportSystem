@@ -1,0 +1,45 @@
+﻿@*@model int
+
+    <h1>Итерация: @Model</h1>*@
+
+@model Passenger[][]
+
+<div>
+    @{
+        var rowCount = Model.Length;
+        var columnCount = Model.First().Length;
+        for (var i = 0; i < rowCount; i++)
+        {
+            <div class="myrow">
+                @{
+                    for (var j = 0; j < columnCount; j++)
+                    {
+                        var passenger = Model[i][j];
+                        <div class="cell">
+                            <H4>
+                                Пассажир №@passenger.Number
+                            </H4>
+                            <p>
+                                @{
+                                    var satisfactionLength = passenger.Satisfaction.ToString().Length;
+                                    var qualityCoefficientLength = passenger.QualityCoefficient.ToString().Length;
+                                }
+                                Удовлетворенность: <strong>@passenger.Satisfaction.ToString().Substring(0, satisfactionLength > 4 ? 4 : satisfactionLength)</strong>
+                                <br/>
+                                Качество услуг: <strong>@passenger.QualityCoefficient.ToString().Substring(0, qualityCoefficientLength > 4 ? 4 : qualityCoefficientLength)</strong>
+                            </p>
+                            @if (passenger.TransportType == 0)
+                            {
+                                <img class="automobile" src="~/images/car2.jpg" alt="машина"/>
+                            }
+                            else
+                            {
+                                <img class="automobile" src="~/images/bus2.jpg" alt="автобус"/>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        }
+    }
+</div>

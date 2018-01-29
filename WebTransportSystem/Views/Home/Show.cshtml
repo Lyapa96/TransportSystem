@@ -1,64 +1,65 @@
-﻿@model Passenger[]
+﻿@using Newtonsoft.Json
+@model Passenger[][]
 
 @{
     ViewBag.Title = "title";
     Layout = "_NewLayout";
 }
 
-<div style="text-align: center">
-    <h2>Текущий ход</h2>
-    <div>
+<script>
+    function sleep(ms) {
+        ms += new Date().getTime();
+        while (new Date() < ms) {
+        }
+    }
+
+    function getNextStep(form) {
+        var count = form.count.value;
+        var delay = form.delay.value * 1000;
         @{
-            for (var i = 0; i < 3; i++)
-            {
-                <div class="myrow">
-                    @{
-                        for (var j = 0 + i * 3; j < 3 + i * 3; j++)
-                        {
-                            var passenger = Model[j];
-                            <div class="cell">
-                                <H4>
-                                    Пассажир №@passenger.Number
-                                </H4>
-                                <p>
-                                   @{
-                                       var satisfactionLength = passenger.Satisfaction.ToString().Length;
-                                       var qualityCoefficientLength = passenger.QualityCoefficient.ToString().Length;
-                                   }
-                                    Удовлетворенность: <strong>@passenger.Satisfaction.ToString().Substring(0, satisfactionLength > 4 ? 4 : satisfactionLength)</strong>
-                                    <br/>
-                                    Качество услуг: <strong>@passenger.QualityCoefficient.ToString().Substring(0, qualityCoefficientLength > 4 ? 4 : qualityCoefficientLength)</strong>
-                                </p>
-                                @if (passenger.TransportType == 0)
-                                {
-                                    <img class="automobile" src="~/images/car.png" alt="машина"/>
-                                }
-                                else
-                                {
-                                    <img class="automobile" src="~/images/bus.png" alt="автобус"/>
-                                }
-                            </div>
-                        }
-                    }
-                </div>
-            }
+            var jsonPassengers = JsonConvert.SerializeObject(Model).Replace("\"", "");
         }
-        @using (Html.BeginForm("MakeNextStep", "Home", FormMethod.Post))
-        {
-            for (var i = 0; i < 9; i++)
-            {
-                <input type="hidden" value="@Model[i].TransportType" name="passengers[@i].TransportType"/>
-                <input type="hidden" value="@Model[i].Number" name="passengers[@i].Number"/>
-                <input type="hidden" value="@Model[i].QualityCoefficient" name="passengers[@i].QualityCoefficient"/>
-                <input type="hidden" value="@Model[i].Satisfaction" name="passengers[@i].Satisfaction"/>
-                for (int j = 0; j < @Model[i].AllQualityCoefficients.Count; j++)
-                {
-                    <input type="hidden" value="@Model[i].AllQualityCoefficients[j]" name="passengers[@i].AllQualityCoefficients[@j]" />
-                }
-            }
+        getAjaxRequest(count, delay, { passengers: @jsonPassengers });
+    };
 
-
-            <input class="btn btn-success" type="submit" value="Следующая итерация"/>
+    function getAjaxRequest(count, delay, newData) {
+        if (count < 0) {
+            return;
         }
-    </div>
+        count--;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetNextStepPartialView")',
+            data: newData,
+            success: function(data) {
+                sleep(delay);
+                //$('#lo').html(`<h1>${data}</h1>`);
+                var passengers = data.passengers;
+                var view = data.view;
+                $('#lo').html(view);
+                var newD = { passengers: passengers };
+                getAjaxRequest(count, delay, newD);
+                //var returnedstring = data.d;
+                //var jsondata = $.parseJSON(data.d);//if you want your data in json
+            }
+        });
+    }
+</script>
+
+<div class="center">
+    <h2>Текущий ход</h2>
+
+    <form onsubmit="return false">
+        <p>
+            Число повторений: <input type="number" name="count" value="5" step="1" min="1" max="10" />
+        </p>
+        <p>
+            Время задержки в секундах: <input type="number" name="delay" value="1" step="0.1" min="0" max="5" />
+        </p>
+
+        <input class="btn btn-success" type="button" onclick="getNextStep(this.form)" value="Запустить">
+    </form>
+
+    <div id="lo">@Html.Partial("Passengers", Model)</div>
+
 </div>

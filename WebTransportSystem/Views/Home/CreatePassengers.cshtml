@@ -1,0 +1,42 @@
+﻿@model object
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_NewLayout";
+}
+
+<script>
+    function getSendBox(form) {
+        var columnCount = form.columnCount.value;
+        var rowCount = form.rowCount.value;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CreateSandboxPassengers")',
+            data: { rowCount, columnCount},
+            success: function(data) {
+                $('#lo').html(data);
+            }
+        });
+    };
+</script>
+
+<div class="center">
+    <h2>Создание начальных условий</h2>
+    <form onsubmit="return false">
+        <p>
+            Количество столбцов: <input type="number" name="columnCount" value="3" step="1" min="1" max="5" />
+        </p>
+        <p>
+            Количество строк: <input type="number" name="rowCount" value="1" step="1" min="1" max="5" />
+        </p>
+        <p>
+            Придаточная функция: <select name="func">
+                <option disabled>Выберите придаточную функцию</option>
+                <option selected value="1">Обычная</option>
+                <option value="1">Новая</option>
+            </select>
+        </p>
+        <input class="btn btn-success" type="button" onclick="getSendBox(this.form)" value="Создать">
+    </form>
+    <div id="lo"></div>
+</div>

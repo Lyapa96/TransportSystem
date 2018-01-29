@@ -47,6 +47,11 @@ namespace WebTransportSystem.Models
             }
         }
 
+        public void AddNeighbor(Passenger neighbor)
+        {
+            Neighbors.Add(neighbor);
+        }
+
         public void ChooseNextTransportType()
         {
             var typeTransportInfos = Neighbors
