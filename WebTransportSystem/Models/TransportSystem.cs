@@ -1,37 +1,33 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace WebTransportSystem.Models
 {
     public static class TransportSystem
     {
-        public static void ChangeQualityCoefficients(IReadOnlyList<Passenger> passengers)
+        public static void ChangeQuality(Passenger[][] passengers)
         {
-            var carCount = passengers.Count(x => x.TransportType == TransportType.Car);
+            var carCount = passengers.Sum(x => x.Count(y => y.TransportType == TransportType.Car));
+            var rowCount = passengers.Length;
+            var columnCount = passengers.First().Length;
+            var passengersCount = rowCount * columnCount;
 
-            foreach (var passenger in passengers)
+            for (var i = 0; i < rowCount; i++)
+            for (var j = 0; j < columnCount; j++)
             {
+                var passenger = passengers[i][j];
                 if (passenger.TransportType == TransportType.Car)
-                {
-                    passenger.QualityCoefficient = GetQualityCoefficientForCar(carCount, passengers.Count, passenger);
-                }
+                    passenger.QualityCoefficient = GetQualityCoefficientForCar(carCount, passengersCount, passenger);
                 else
-                {
                     passenger.QualityCoefficient = GetQualityCoefficientForBus(passenger);
-                }
             }
         }
 
         private static double GetQualityCoefficientForBus(Passenger passenger)
         {
             if (passenger.Number <= 3)
-            {
                 return 0.3;
-            }
             if (passenger.Number <= 6)
-            {
                 return 0.4;
-            }
 
             return 0.5;
         }
@@ -40,7 +36,7 @@ namespace WebTransportSystem.Models
         {
             if (passenger.Neighbors.Count(x => x.TransportType == TransportType.Car) < 2)
             {
-                var answer = 1 - (double)carCount / n;
+                var answer = 1 - (double) carCount / n;
                 return answer;
             }
 

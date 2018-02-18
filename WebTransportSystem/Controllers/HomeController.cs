@@ -33,10 +33,7 @@ namespace WebTransportSystem.Controllers
                 }
             }
 
-            for (int i = 0; i < rowCount; i++)
-            {
-                TransportSystem.ChangeQualityCoefficients(passengers[i]);
-            }
+            TransportSystem.ChangeQuality(passengers);
 
             for (int i = 0; i < rowCount; i++)
             {
