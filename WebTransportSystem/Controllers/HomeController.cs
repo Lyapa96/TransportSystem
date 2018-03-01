@@ -21,35 +21,23 @@ namespace WebTransportSystem.Controllers
         public JsonResult GetNextStepPartialView(Passenger[][] passengers)
         {
             var view = _viewRenderService.RenderToStringAsync("Home/Passengers", passengers).Result;
-            SetNeighborsPassengers(passengers);
+            PassengersHelper.SetNeighborsPassengers(passengers);
 
             var rowCount = passengers.Length;
             var columnCount = passengers.First().Length;
-            for (int i = 0; i < rowCount; i++)
-            {
-                for (int j = 0; j < columnCount; j++)
-                {
-                    passengers[i][j].ChooseNextTransportType();
-                }
-            }
+            for (var i = 0; i < rowCount; i++)
+            for (var j = 0; j < columnCount; j++)
+                passengers[i][j].ChooseNextTransportType();
 
             TransportSystem.ChangeQuality(passengers);
 
-            for (int i = 0; i < rowCount; i++)
-            {
-                for (int j = 0; j < columnCount; j++)
-                {
-                    passengers[i][j].UpdateSatisfaction();
-                }
-            }
+            for (var i = 0; i < rowCount; i++)
+            for (var j = 0; j < columnCount; j++)
+                passengers[i][j].UpdateSatisfaction();
 
-            for (int i = 0; i < rowCount; i++)
-            {
-                for (int j = 0; j < columnCount; j++)
-                {
-                    passengers[i][j].Neighbors = new HashSet<Passenger>();
-                }
-            }
+            for (var i = 0; i < rowCount; i++)
+            for (var j = 0; j < columnCount; j++)
+                passengers[i][j].Neighbors = new HashSet<Passenger>();
 
             var result = new
             {
@@ -88,21 +76,9 @@ namespace WebTransportSystem.Controllers
             return PartialView(passengers);
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact(Passenger[] p)
-        {
-            ViewData["Message"] = "Your contact page.";
 
             return View();
         }
@@ -119,34 +95,6 @@ namespace WebTransportSystem.Controllers
 
             TempData["passengers"] = JsonConvert.SerializeObject(passengers);
             return RedirectToAction("Show", "Home");
-        }
-
-        private void SetNeighborsPassengers(Passenger[][] passengers)
-        {
-            var rowCount = passengers.Length;
-            var columnCount = passengers.First().Length;
-            for (int i = 0; i < rowCount; i++)
-            {
-                for (int j = 0; j < columnCount; j++)
-                {
-                    if (i > 0)
-                    {
-                        passengers[i][j].AddNeighbor(passengers[i-1][j]);
-                    }
-                    if (j > 0)
-                    {
-                        passengers[i][j].AddNeighbor(passengers[i][j-1]);
-                    }
-                    if (i < rowCount - 1)
-                    {
-                        passengers[i][j].AddNeighbor(passengers[i + 1][j]);
-                    }
-                    if (j < columnCount - 1)
-                    {
-                        passengers[i][j].AddNeighbor(passengers[i][j + 1]);
-                    }
-                }
-            }
         }
     }
 }
