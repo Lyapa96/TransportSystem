@@ -21,23 +21,10 @@ namespace WebTransportSystem.Controllers
         public JsonResult GetNextStepPartialView(Passenger[][] passengers)
         {
             var view = _viewRenderService.RenderToStringAsync("Home/Passengers", passengers).Result;
+
             PassengersHelper.SetNeighborsPassengers(passengers);
-
-            var rowCount = passengers.Length;
-            var columnCount = passengers.First().Length;
-            for (var i = 0; i < rowCount; i++)
-            for (var j = 0; j < columnCount; j++)
-                passengers[i][j].ChooseNextTransportType();
-
-            TransportSystem.ChangeQuality(passengers);
-
-            for (var i = 0; i < rowCount; i++)
-            for (var j = 0; j < columnCount; j++)
-                passengers[i][j].UpdateSatisfaction();
-
-            for (var i = 0; i < rowCount; i++)
-            for (var j = 0; j < columnCount; j++)
-                passengers[i][j].Neighbors = new HashSet<Passenger>();
+            MainAlgorithm.Run(passengers);
+            PassengersHelper.ClearNeighborsPassengers(passengers);
 
             var result = new
             {
@@ -78,8 +65,6 @@ namespace WebTransportSystem.Controllers
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
-
             return View();
         }
 

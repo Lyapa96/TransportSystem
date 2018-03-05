@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using WebTransportSystem.Models;
 
@@ -41,6 +42,15 @@ namespace WebTransportSystem.Utilities
                     }
                 }
             }
+        }
+
+        public static void ClearNeighborsPassengers(Passenger[][] passengers)
+        {
+            var rowCount = passengers.Length;
+            var columnCount = passengers.First().Length;
+            for (var i = 0; i < rowCount; i++)
+            for (var j = 0; j < columnCount; j++)
+                passengers[i][j].Neighbors = new HashSet<Passenger>();
         }
     }
 }
