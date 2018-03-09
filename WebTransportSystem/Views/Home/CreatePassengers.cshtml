@@ -14,7 +14,7 @@
             url: '@Url.Action("CreateSandboxPassengers")',
             data: { rowCount, columnCount},
             success: function(data) {
-                $('#lo').html(data);
+                $('#passengers').html(data);
             }
         });
     };
@@ -33,10 +33,10 @@
             Передаточная функция: <select name="func">
                 <option disabled>Выберите передаточную функцию</option>
                 <option selected value="1">Обычная</option>
-                <option value="1">Новая</option>
+                <option value="1">Обучение с подкреплением</option>
             </select>
         </p>
         <input class="btn btn-success" type="button" onclick="getSendBox(this.form)" value="Создать">
     </form>
-    <div id="lo"></div>
+    <div id="passengers"></div>
 </div>

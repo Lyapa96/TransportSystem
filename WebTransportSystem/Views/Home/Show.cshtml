@@ -32,24 +32,33 @@
     };
 
     function getAjaxRequest(count, delay, newData) {
-        if (count < 0) {
+        if (count <= 0) {
             return;
         }
         count--;
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetNextStepPartialView")',
+            url: '@Url.Action("GetNextStepPassengers")',
             data: newData,
             success: function(data) {
                 sleep(delay);
-                var passengers = data.passengers;
-                var view = data.view;
-                $('#lo').html(view);
-                lastPassengers = { passengers: passengers };
+                lastPassengers = { passengers: data.passengers };
+                getNextView(lastPassengers);
                 getAjaxRequest(count, delay, lastPassengers);
             }
         });
     }
+
+    function getNextView(passengers) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetNextStepPartialView")',
+            data: passengers,
+            success: function(data) {
+                $('#passengers').html(data);
+            }
+        });
+    };
 </script>
 
 <div class="center">
@@ -66,6 +75,6 @@
         <input class="btn btn-success" type="button" onclick="getNextStep(this.form)" value="Запустить">
     </form>
 
-    <div id="lo">@Html.Partial("Passengers", Model)</div>
+    <div id="passengers">@Html.Partial("GetNextStepPartialView", Model)</div>
 
 </div>

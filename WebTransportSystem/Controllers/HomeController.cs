@@ -10,34 +10,28 @@ namespace WebTransportSystem.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IViewRenderService _viewRenderService;
-
-        public HomeController(IViewRenderService viewRenderService)
-        {
-            _viewRenderService = viewRenderService;
-        }
-
         [HttpPost]
-        public JsonResult GetNextStepPartialView(Passenger[][] passengers)
+        public JsonResult GetNextStepPassengers(Passenger[][] passengers)
         {
-            var view = _viewRenderService.RenderToStringAsync("Home/Passengers", passengers).Result;
-
             PassengersHelper.SetNeighborsPassengers(passengers);
             MainAlgorithm.Run(passengers);
             PassengersHelper.ClearNeighborsPassengers(passengers);
 
-            var result = new
-            {
-                passengers,
-                view
-            };
-            return new JsonResult(result);
+            return new JsonResult(new {passengers});
+        }
+
+        [HttpPost]
+        public IActionResult GetNextStepPartialView(Passenger[][] passengers)
+        {
+            return PartialView(passengers);
         }
 
         [HttpGet]
         public IActionResult Show()
         {
             var jsonPassengers = (string) TempData["passengers"];
+            if (jsonPassengers == null)
+                return RedirectToAction("CreatePassengers");
             var passengers = JsonConvert.DeserializeObject<Passenger[][]>(jsonPassengers);
 
             return View(passengers);
