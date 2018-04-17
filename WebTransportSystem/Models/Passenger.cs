@@ -1,29 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CSharp.RuntimeBinder;
+using WebTransportSystem.Models.TransportChooseAlgorithm;
 
 namespace WebTransportSystem.Models
 {
     public class Passenger
     {
+        private readonly TransmissionType transmissionType;
         private const double PersonalSatisfaction = 0.1;
+        private TransmissionFuncFactory factory;
 
         public Passenger(TransportType transportType,
+            TransmissionType transmissionType,
             double qualityCoefficient,
             double satisfaction,
             int number)
         {
+            this.transmissionType = transmissionType;
             Number = number;
             TransportType = transportType;
             QualityCoefficient = qualityCoefficient;
             Satisfaction = satisfaction;
             Neighbors = new HashSet<Passenger>();
+            factory = new TransmissionFuncFactory();
         }
 
         public Passenger()
         {
             Neighbors = new HashSet<Passenger>();
             AllQualityCoefficients = new List<double>();
+            factory = new TransmissionFuncFactory();
         }
 
         public int Number { get; set; }
@@ -33,8 +41,8 @@ namespace WebTransportSystem.Models
         public HashSet<Passenger> Neighbors { get; set; }
         public List<double> AllQualityCoefficients { get; set; }
 
-        private double GetAverageQuality => AllQualityCoefficients.Count > 0 ?
-            AllQualityCoefficients.Skip(Math.Max(0, AllQualityCoefficients.Count() - 5)).Average()
+        private double GetAverageQuality => AllQualityCoefficients.Count > 0
+            ? AllQualityCoefficients.Skip(Math.Max(0, AllQualityCoefficients.Count() - 5)).Average()
             : 0;
 
         public void AddNeighbors(params Passenger[] neighbors)
@@ -54,23 +62,25 @@ namespace WebTransportSystem.Models
 
         public void ChooseNextTransportType()
         {
-            var typeTransportInfos = Neighbors
-                .GroupBy(x => x.TransportType)
-                .Select(type =>
-                {
-                    var averageSatisfaction = type.Select(x => x.Satisfaction).Average();
-                    return Tuple.Create(type.Key, averageSatisfaction);
-                });
+            TransportType = factory.GetTransmissionFunc(transmissionType)
+                .ChooseNextTransportType(Neighbors, TransportType, Satisfaction);
+            //var typeTransportInfos = Neighbors
+            //    .GroupBy(x => x.TransportType)
+            //    .Select(type =>
+            //    {
+            //        var averageSatisfaction = type.Select(x => x.Satisfaction).Average();
+            //        return Tuple.Create(type.Key, averageSatisfaction);
+            //    });
 
-            foreach (var info in typeTransportInfos)
-                if (info.Item2 > Satisfaction)
-                    TransportType = info.Item1;
+            //foreach (var info in typeTransportInfos)
+            //    if (info.Item2 > Satisfaction)
+            //        TransportType = info.Item1;
 
-            if (TransportType == TransportType.Car)
-            {
-                var rnd = new Random();
-                TransportType = rnd.Next(1, 100) < 85 ? TransportType.Car : TransportType.Bus;
-            }
+            //if (TransportType == TransportType.Car)
+            //{
+            //    var rnd = new Random();
+            //    TransportType = rnd.Next(1, 100) < 85 ? TransportType.Car : TransportType.Bus;
+            //}
         }
 
         public void UpdateSatisfaction()

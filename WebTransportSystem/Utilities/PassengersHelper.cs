@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using WebTransportSystem.Models;
+using WebTransportSystem.Models.TransportChooseAlgorithm;
 
 namespace WebTransportSystem.Utilities
 {
     public static class PassengersHelper
     {
-        public static Passenger CreatePassenger(int number)
+        public static Passenger CreatePassenger(int number, TransmissionType transmissionType)
         {
             var rnd = new Random();
             var transport = rnd.Next(2) == 1 ? TransportType.Bus : TransportType.Car;
             var quality = Math.Round(rnd.NextDouble(), 2);
             var satisfaction = Math.Round(rnd.NextDouble(), 2);
-            return new Passenger(transport, quality, satisfaction, number);
+            return new Passenger(transport, transmissionType, quality, satisfaction, number);
         }
 
         public static void SetNeighborsPassengers(Passenger[][] passengers)

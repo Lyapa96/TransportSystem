@@ -9,10 +9,11 @@
     function getSendBox(form) {
         var columnCount = form.columnCount.value;
         var rowCount = form.rowCount.value;
+        var transmissionType = form.func.value;
         $.ajax({
             type: "POST",
             url: '@Url.Action("CreateSandboxPassengers")',
-            data: { rowCount, columnCount},
+            data: { rowCount, columnCount, transmissionType},
             success: function(data) {
                 $('#passengers').html(data);
             }
@@ -32,8 +33,8 @@
         <p>
             Передаточная функция: <select name="func">
                 <option disabled>Выберите передаточную функцию</option>
-                <option selected value="1">Обычная</option>
-                <option value="1">Обучение с подкреплением</option>
+                <option selected value="0">Выбор лучшего по среднему уровню</option>
+                <option value="1">Отклонение от текущего уровня</option>
             </select>
         </p>
         <input class="btn btn-success" type="button" onclick="getSendBox(this.form)" value="Создать">

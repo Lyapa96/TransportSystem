@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using WebTransportSystem.Models;
+using WebTransportSystem.Models.TransportChooseAlgorithm;
 using WebTransportSystem.Utilities;
 
 namespace WebTransportSystem.Controllers
@@ -44,14 +45,14 @@ namespace WebTransportSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateSandboxPassengers(int rowCount, int columnCount)
+        public IActionResult CreateSandboxPassengers(int rowCount, int columnCount, int transmissionType)
         {
             var passengers = new List<List<Passenger>>();
             for (var i = 0; i < rowCount; i++)
             {
                 passengers.Add(new List<Passenger>());
                 for (var j = 0; j < columnCount; j++)
-                    passengers[i].Add(PassengersHelper.CreatePassenger(i * 10 + j));
+                    passengers[i].Add(PassengersHelper.CreatePassenger(i * 10 + j, (TransmissionType)transmissionType));
             }
 
             return PartialView(passengers);
