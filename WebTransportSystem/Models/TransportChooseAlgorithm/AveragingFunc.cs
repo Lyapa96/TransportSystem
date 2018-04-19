@@ -6,7 +6,7 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm
 {
     public class AveragingFunc : ITransmissionFunc
     {
-        public TransportType ChooseNextTransportType(HashSet<Passenger> neighbors, TransportType currentTransportType, double currentSatisfaction)
+        public TransportType ChooseNextTransportType(HashSet<Passenger> neighbors, TransportType currentTransportType, double currentSatisfaction, double deviationValue)
         {
             var typeTransportInfos = neighbors
                 .GroupBy(x => x.TransportType)

@@ -52,7 +52,8 @@ namespace WebTransportSystem.Controllers
             {
                 passengers.Add(new List<Passenger>());
                 for (var j = 0; j < columnCount; j++)
-                    passengers[i].Add(PassengersHelper.CreatePassenger(i * 10 + j, (TransmissionType)transmissionType));
+                    passengers[i]
+                        .Add(PassengersHelper.CreatePassenger(i * 10 + j, (TransmissionType) transmissionType));
             }
 
             return PartialView(passengers);

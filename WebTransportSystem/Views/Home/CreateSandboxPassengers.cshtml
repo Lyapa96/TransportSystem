@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using WebTransportSystem.Models.TransportChooseAlgorithm
 @model List<List<WebTransportSystem.Models.Passenger>>
 
 @{
@@ -9,42 +10,51 @@
 {
     for (var i = 0; i < rowCount; i++)
     {
-        <div class="myrow">
-            @{
-                var currentRow = Model[i];
-                for (var j = 0; j < columnCount; j++)
-                {
-                    var passenger = currentRow[j];
-                    <input type="hidden" value="@passenger.Number" name="newPassengers[@i][@j].Number" />
-                    <div class="cell">
-                        <H4>
-                            Пассажир №@passenger.Number
-                        </H4>
+<div class="myrow">
+    @{
+        var currentRow = Model[i];
+        for (var j = 0; j < columnCount; j++)
+        {
+            var passenger = currentRow[j];
+            <input type="hidden" value="@passenger.Number" name="newPassengers[@i][@j].Number" />
+            <input type="hidden" value="@passenger.TransmissionType" name="newPassengers[@i][@j].TransmissionType" />
+            <div class="cell">
+                <H4>
+                    Пассажир №@passenger.Number
+                </H4>
+                <p style="float: right; margin-right: 5px">
+                    Удовлетворенность: <input type="number" name="newPassengers[@i][@j].Satisfaction" value="@passenger.Satisfaction.ToString(CultureInfo.InvariantCulture).Replace(',', '.')" step="0.01" min="0" max="1" />
+                </p>
+                <p style="float: right; margin-right: 5px">
+                    Качество услуг: <input type="number" name="newPassengers[@i][@j].QualityCoefficient" value="@passenger.QualityCoefficient.ToString(CultureInfo.InvariantCulture).Replace(',', '.')" step="0.01" min="0" max="1" />
+                </p>
+                @{
+                    if (passenger.TransmissionType == TransmissionType.Deviation)
+                    {
                         <p style="float: right; margin-right: 5px">
-                            Удовлетворенность: <input type="number" name="newPassengers[@i][@j].Satisfaction" value="@passenger.Satisfaction.ToString(CultureInfo.InvariantCulture).Replace(',', '.')" step="0.01" min="0" max="1" />
+                            Уровень отклонения: <input type="number" name="newPassengers[@i][@j].DeviationValue" value="0.15" step="0.01" min="0" max="1" />
                         </p>
-                        <p style="float: right; margin-right: 5px">
-                            Качество услуг: <input type="number" name="newPassengers[@i][@j].QualityCoefficient" value="@passenger.QualityCoefficient.ToString(CultureInfo.InvariantCulture).Replace(',', '.')" step="0.01" min="0" max="1" />
-                        </p>
-                        <p>
-                            <select name="newPassengers[@i][@j].TransportType">
-                                <option disabled>Выберите транспорт</option>
-                                @if (passenger.TransportType == TransportType.Bus)
-                                {
-                                    <option value="@TransportType.Car">Машина</option>
-                                    <option selected value="@TransportType.Bus">Автобус</option>
-                                }
-                                else
-                                {
-                                    <option selected value="@TransportType.Car">Машина</option>
-                                    <option value="@TransportType.Bus">Автобус</option>
-                                }
-                            </select>
-                        </p>
-                    </div>
+                    }
                 }
-            }
-        </div>
+                <p>
+                    <select name="newPassengers[@i][@j].TransportType">
+                        <option disabled>Выберите транспорт</option>
+                        @if (passenger.TransportType == TransportType.Bus)
+            {
+                <option value="@TransportType.Car">Машина</option>
+                <option selected value="@TransportType.Bus">Автобус</option>
+}
+else
+{
+            <option selected value="@TransportType.Car">Машина</option>
+            <option value="@TransportType.Bus">Автобус</option>
+}
+                    </select>
+                </p>
+            </div>
+        }
+    }
+</div>
     }
     <input class="btn btn-success" type="submit" value="Отправить" />
 }

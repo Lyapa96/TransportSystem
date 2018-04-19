@@ -8,7 +8,6 @@ namespace WebTransportSystem.Models
 {
     public class Passenger
     {
-        private readonly TransmissionType transmissionType;
         private const double PersonalSatisfaction = 0.1;
         private TransmissionFuncFactory factory;
 
@@ -18,7 +17,7 @@ namespace WebTransportSystem.Models
             double satisfaction,
             int number)
         {
-            this.transmissionType = transmissionType;
+            TransmissionType = transmissionType;
             Number = number;
             TransportType = transportType;
             QualityCoefficient = qualityCoefficient;
@@ -40,6 +39,8 @@ namespace WebTransportSystem.Models
         public double Satisfaction { get; set; }
         public HashSet<Passenger> Neighbors { get; set; }
         public List<double> AllQualityCoefficients { get; set; }
+        public TransmissionType TransmissionType { get; set; }
+        public double DeviationValue { get; set; }
 
         private double GetAverageQuality => AllQualityCoefficients.Count > 0
             ? AllQualityCoefficients.Skip(Math.Max(0, AllQualityCoefficients.Count() - 5)).Average()
@@ -62,25 +63,8 @@ namespace WebTransportSystem.Models
 
         public void ChooseNextTransportType()
         {
-            TransportType = factory.GetTransmissionFunc(transmissionType)
-                .ChooseNextTransportType(Neighbors, TransportType, Satisfaction);
-            //var typeTransportInfos = Neighbors
-            //    .GroupBy(x => x.TransportType)
-            //    .Select(type =>
-            //    {
-            //        var averageSatisfaction = type.Select(x => x.Satisfaction).Average();
-            //        return Tuple.Create(type.Key, averageSatisfaction);
-            //    });
-
-            //foreach (var info in typeTransportInfos)
-            //    if (info.Item2 > Satisfaction)
-            //        TransportType = info.Item1;
-
-            //if (TransportType == TransportType.Car)
-            //{
-            //    var rnd = new Random();
-            //    TransportType = rnd.Next(1, 100) < 85 ? TransportType.Car : TransportType.Bus;
-            //}
+            TransportType = factory.GetTransmissionFunc(TransmissionType)
+                .ChooseNextTransportType(Neighbors, TransportType, Satisfaction, DeviationValue);
         }
 
         public void UpdateSatisfaction()
