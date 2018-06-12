@@ -3,6 +3,7 @@
     public enum TransmissionType
     {
         Average,
-        Deviation
+        Deviation,
+        QLearning
     }
 }

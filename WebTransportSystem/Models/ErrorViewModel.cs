@@ -1,5 +1,3 @@
-using System;
-
 namespace WebTransportSystem.Models
 {
     public class ErrorViewModel

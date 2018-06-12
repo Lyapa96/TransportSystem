@@ -9,16 +9,15 @@ namespace WebTransportSystem.Models
             var carCount = passengers.Sum(x => x.Count(y => y.TransportType == TransportType.Car));
             var rowCount = passengers.Length;
             var columnCount = passengers.First().Length;
-            var passengersCount = rowCount * columnCount;
+            var passengersCount = rowCount*columnCount;
 
             for (var i = 0; i < rowCount; i++)
             for (var j = 0; j < columnCount; j++)
             {
                 var passenger = passengers[i][j];
-                if (passenger.TransportType == TransportType.Car)
-                    passenger.QualityCoefficient = GetQualityCoefficientForCar(carCount, passengersCount, passenger);
-                else
-                    passenger.QualityCoefficient = GetQualityCoefficientForBus(passenger);
+                passenger.QualityCoefficient = passenger.TransportType == TransportType.Car
+                    ? GetQualityCoefficientForCar(carCount, passengersCount, passenger)
+                    : GetQualityCoefficientForBus(passenger);
             }
         }
 
@@ -36,7 +35,7 @@ namespace WebTransportSystem.Models
         {
             if (passenger.Neighbors.Count(x => x.TransportType == TransportType.Car) < 2)
             {
-                var answer = 1 - (double) carCount / n;
+                var answer = 1 - (double) carCount/n;
                 return answer;
             }
 

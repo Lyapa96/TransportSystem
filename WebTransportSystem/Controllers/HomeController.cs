@@ -11,10 +11,17 @@ namespace WebTransportSystem.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly PassengerBehaviour passengerBehaviour;
+
+        public HomeController(PassengerBehaviour passengerBehaviour)
+        {
+            this.passengerBehaviour = passengerBehaviour;
+        }
+
         [HttpPost]
         public JsonResult GetNextStepPassengers(Passenger[][] passengers)
         {
-            PassengersHelper.SetNeighborsPassengers(passengers);
+            PassengersHelper.SetNeighborsPassengers(passengers, passengerBehaviour);
             MainAlgorithm.Run(passengers);
             PassengersHelper.ClearNeighborsPassengers(passengers);
 
@@ -53,7 +60,7 @@ namespace WebTransportSystem.Controllers
                 passengers.Add(new List<Passenger>());
                 for (var j = 0; j < columnCount; j++)
                     passengers[i]
-                        .Add(PassengersHelper.CreatePassenger(i * 10 + j, (TransmissionType) transmissionType));
+                        .Add(PassengersHelper.CreatePassenger(passengerBehaviour, i*10 + j, (TransmissionType) transmissionType));
             }
 
             return PartialView(passengers);

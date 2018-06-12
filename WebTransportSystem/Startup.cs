@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using WebTransportSystem.Utilities;
+using WebTransportSystem.Models;
+using WebTransportSystem.Models.TransportChooseAlgorithm.QLearning.Storage;
 
 namespace WebTransportSystem
 {
@@ -22,6 +20,13 @@ namespace WebTransportSystem
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var storage = new MemoryStorage();
+            //var storage = new MongoDbStorage();
+            services.AddSingleton(new PassengerBehaviour(storage));
+            services.Configure<FormOptions>(options =>
+            {
+                options.ValueCountLimit = int.MaxValue;
+            });
             services.AddMvc();
         }
 
@@ -43,8 +48,8 @@ namespace WebTransportSystem
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

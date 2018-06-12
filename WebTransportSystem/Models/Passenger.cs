@@ -1,38 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.CSharp.RuntimeBinder;
+﻿using System.Collections.Generic;
 using WebTransportSystem.Models.TransportChooseAlgorithm;
+using WebTransportSystem.Models.TransportChooseAlgorithm.QLearning;
 
 namespace WebTransportSystem.Models
 {
     public class Passenger
     {
-        private const double PersonalSatisfaction = 0.1;
-        private TransmissionFuncFactory factory;
-
-        public Passenger(TransportType transportType,
+        public Passenger(
+            PassengerBehaviour passengerBehaviour,
+            TransportType transportType,
             TransmissionType transmissionType,
             double qualityCoefficient,
             double satisfaction,
             int number)
         {
+            PassengerBehaviour = passengerBehaviour;
             TransmissionType = transmissionType;
             Number = number;
             TransportType = transportType;
             QualityCoefficient = qualityCoefficient;
             Satisfaction = satisfaction;
             Neighbors = new HashSet<Passenger>();
-            factory = new TransmissionFuncFactory();
         }
 
         public Passenger()
         {
             Neighbors = new HashSet<Passenger>();
             AllQualityCoefficients = new List<double>();
-            factory = new TransmissionFuncFactory();
         }
 
+        public PassengerBehaviour PassengerBehaviour { get; set; }
+
+        public double PersonalSatisfaction => 0.1;
         public int Number { get; set; }
         public TransportType TransportType { get; set; }
         public double QualityCoefficient { get; set; }
@@ -41,20 +40,7 @@ namespace WebTransportSystem.Models
         public List<double> AllQualityCoefficients { get; set; }
         public TransmissionType TransmissionType { get; set; }
         public double DeviationValue { get; set; }
-
-        private double GetAverageQuality => AllQualityCoefficients.Count > 0
-            ? AllQualityCoefficients.Skip(Math.Max(0, AllQualityCoefficients.Count() - 5)).Average()
-            : 0;
-
-        public void AddNeighbors(params Passenger[] neighbors)
-        {
-            foreach (var passenger in neighbors)
-            {
-                Neighbors.Add(passenger);
-
-                passenger.Neighbors.Add(this);
-            }
-        }
+        public string PreviousState { get; set; }
 
         public void AddNeighbor(Passenger neighbor)
         {
@@ -63,13 +49,17 @@ namespace WebTransportSystem.Models
 
         public void ChooseNextTransportType()
         {
-            TransportType = factory.GetTransmissionFunc(TransmissionType)
+            PreviousState = new AgentState(Neighbors, Satisfaction, TransportType).GetAsString();
+            TransportType = PassengerBehaviour
+                .GetTransmissionFunc(TransmissionType)
                 .ChooseNextTransportType(Neighbors, TransportType, Satisfaction, DeviationValue);
         }
 
         public void UpdateSatisfaction()
         {
-            Satisfaction = (QualityCoefficient - GetAverageQuality + 1) / 2 + PersonalSatisfaction;
+            Satisfaction = PassengerBehaviour
+                .GetSatisfactionDeterminationAlgorithm(TransmissionType)
+                .GetSatisfaction(this);
             AllQualityCoefficients.Add(QualityCoefficient);
         }
 
