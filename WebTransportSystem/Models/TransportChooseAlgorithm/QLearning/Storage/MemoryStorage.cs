@@ -1,39 +1,55 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using WebTransportSystem.Utilities;
+using WebTransportSystem.Models.TransportChooseAlgorithm.QLearning.Storage.Sql;
 
 namespace WebTransportSystem.Models.TransportChooseAlgorithm.QLearning.Storage
 {
     public class MemoryStorage : IAgentStateStorage
     {
-        private readonly Dictionary<string, List<QLearningTransportTypeInfo>> agentStateToTransportTypes =
-            new Dictionary<string, List<QLearningTransportTypeInfo>>();
+        private readonly List<QFuncInfo> qFuncInfos = new List<QFuncInfo>();
 
         public TransportType GetBestNextTransport(string currentAgentState)
         {
-            if (agentStateToTransportTypes.ContainsKey(currentAgentState))
+            var qFuncInfo = qFuncInfos.FirstOrDefault(x => x.State == currentAgentState);
+            if (qFuncInfo == null)
             {
-                var allTransportTypes = agentStateToTransportTypes[currentAgentState];
-                return allTransportTypes
-                    .OrderByDescending(x => x.GetAverageValue)
-                    .First()
-                    .TransportType;
+                qFuncInfo = StorageHelpers.CreateRandomQFuncInfo(currentAgentState);
+                qFuncInfos.Add(qFuncInfo);
             }
 
-            return PassengersHelper.GetRandomtransportType();
+            return QLearningAlgoritm.GetBestNextTransportWithEpsilonMush(qFuncInfo);
         }
 
-        public void SaveStateReward(string previousAgentState, string currentAgentState, double reward, TransportType previousAction)
+        public void SaveStateReward(
+            string previousAgentState,
+            string currentAgentState,
+            double reward,
+            TransportType previousAction)
         {
-            if (agentStateToTransportTypes.ContainsKey(previousAgentState))
+            var previousQFunc = qFuncInfos.FirstOrDefault(x => x.State == previousAgentState);
+            if (previousQFunc == null)
             {
-                var allTransportTypes = agentStateToTransportTypes[previousAgentState];
-                var current = allTransportTypes.Find(x => x.TransportType == previousAction);
-                current.Rewards.Add(reward);
+                qFuncInfos.Add(StorageHelpers.CreateRandomQFuncInfo(previousAgentState));
             }
             else
             {
-                agentStateToTransportTypes[previousAgentState] = StorageHelpers.CreateFirstInfo(previousAction, reward);
+                var currenQFunc = qFuncInfos.FirstOrDefault(x => x.State == currentAgentState);
+                if (currenQFunc == null)
+                {
+                    currenQFunc = StorageHelpers.CreateRandomQFuncInfo(currentAgentState);
+                    qFuncInfos.Add(currenQFunc);
+                }
+
+                var maxNextReward = currenQFunc.GetBestReward();
+
+                if (previousAction == TransportType.Bus)
+                {
+                    previousQFunc.BusReward = QLearningAlgoritm.GetUpdateReward(previousQFunc.BusReward, maxNextReward, reward);
+                }
+                else
+                {
+                    previousQFunc.CarReward = QLearningAlgoritm.GetUpdateReward(previousQFunc.CarReward, maxNextReward, reward);
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ namespace WebTransportSystem.Models.SatisfactionDetermination
 {
     public class QLearningQualityCoefficientAlgorithm : ISatisfactionDeterminationAlgorithm
     {
+        private const double RewardWorth = 0.5;
         private readonly IAgentStateStorage stateStorage;
 
         public QLearningQualityCoefficientAlgorithm(IAgentStateStorage stateStorage)
@@ -16,12 +17,12 @@ namespace WebTransportSystem.Models.SatisfactionDetermination
 
         public double GetSatisfaction(Passenger passenger)
         {
-            var curretnQualityCoefficient = passenger.QualityCoefficient;
+            var currentQualityCoefficient = passenger.QualityCoefficient;
             var reward = 0.0;
             if (passenger.AllQualityCoefficients.Count != 0)
             {
                 var previousQualityCoefficient = passenger.AllQualityCoefficients.Last();
-                reward = previousQualityCoefficient > curretnQualityCoefficient ? -0.5 : 0.5;
+                reward = GetReward(previousQualityCoefficient, currentQualityCoefficient);
             }
 
             var currentState = new AgentState(passenger.Neighbors, passenger.Satisfaction, passenger.TransportType).GetStringFormat();
@@ -32,7 +33,12 @@ namespace WebTransportSystem.Models.SatisfactionDetermination
                 ? allQualityCoefficients.Skip(Math.Max(0, allQualityCoefficients.Count - 5)).Average()
                 : 0;
 
-            return (curretnQualityCoefficient - averageQuality + 1)/2 + passenger.QualityCoefficient;
+            return (currentQualityCoefficient - averageQuality + 1)/2 + passenger.QualityCoefficient;
+        }
+
+        private double GetReward(double previousQualityCoefficient, double currentQualityCoefficient)
+        {
+            return previousQualityCoefficient > currentQualityCoefficient ? -RewardWorth : RewardWorth;
         }
     }
 }

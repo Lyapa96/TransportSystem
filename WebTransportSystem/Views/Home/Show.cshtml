@@ -43,6 +43,16 @@
             success: function(data) {
                 sleep(delay);
                 lastPassengers = { passengers: data.passengers };
+                var passengersCount = 0;
+                var sumSatisfaction = 0;
+                for (var i = 0; i < data.passengers.length; i++) {
+                    for (var j = 0; j < data.passengers[0].length; j++) {
+                        passengersCount++;
+                        sumSatisfaction += data.passengers[i][j].satisfaction;
+                    }
+                }
+                var averageSatisfaction = sumSatisfaction / passengersCount;
+                $('#averageSatisfaction').html('&#120765 = ' + averageSatisfaction.toFixed(2));
                 getNextView(lastPassengers);
                 getAjaxRequest(count, delay, lastPassengers);
             }
@@ -63,13 +73,13 @@
 
 <div class="center">
     <h2>Текущий ход</h2>
-
+    <h3 id="averageSatisfaction">&#120765 =  ? </h3>
     <form onsubmit="return false">
         <p>
-            Число повторений: <input type="number" name="count" value="5" step="1" min="1" max="1000" />
+            Число повторений: <input type="number" name="count" value="5" step="1" min="1" max="1000"/>
         </p>
         <p>
-            Время задержки в секундах: <input type="number" name="delay" value="1" step="0.1" min="0" max="5" />
+            Время задержки в секундах: <input type="number" name="delay" value="1" step="0.1" min="0" max="5"/>
         </p>
 
         <input class="btn btn-success" type="button" onclick="getNextStep(this.form)" value="Запустить">
