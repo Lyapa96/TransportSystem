@@ -3,11 +3,11 @@ using WebTransportSystem.Models.TransportChooseAlgorithm.QLearning.Storage;
 
 namespace WebTransportSystem.Models.TransportChooseAlgorithm.QLearning
 {
-    public class QLearningFunc : ITransmissionFunc
+    public class QLearningTransmissionFunc : ITransmissionFunc
     {
         private readonly IAgentStateStorage stateStorage;
 
-        public QLearningFunc(IAgentStateStorage stateStorage)
+        public QLearningTransmissionFunc(IAgentStateStorage stateStorage)
         {
             this.stateStorage = stateStorage;
         }
@@ -18,8 +18,8 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm.QLearning
             double currentSatisfaction,
             double deviationValue)
         {
-            var agentState = new AgentState(neighbors, currentSatisfaction, currentTransportType);
-            return stateStorage.GetBestNextTransport(agentState);
+            var currentAgentState = new AgentState(neighbors, currentSatisfaction, currentTransportType).GetStringFormat();
+            return stateStorage.GetBestNextTransport(currentAgentState);
         }
     }
 }

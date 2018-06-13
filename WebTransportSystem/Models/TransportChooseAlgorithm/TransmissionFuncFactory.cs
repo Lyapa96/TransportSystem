@@ -14,7 +14,7 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm
             {
                 {TransmissionType.Average, new AveragingFunc()},
                 {TransmissionType.Deviation, new DeviationFunc()},
-                {TransmissionType.QLearning, new QLearningFunc(stateStorage)}
+                {TransmissionType.QLearning, new QLearningTransmissionFunc(stateStorage)}
             };
         }
 

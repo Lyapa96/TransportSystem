@@ -2,7 +2,7 @@
 {
     public interface IAgentStateStorage
     {
-        TransportType GetBestNextTransport(AgentState agentState);
-        void SaveStateReward(string agentState, TransportType transportType, double reward);
+        TransportType GetBestNextTransport(string currentAgentState);
+        void SaveStateReward(string previousAgentState, string currentAgentState, double reward, TransportType previousAction);
     }
 }

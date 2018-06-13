@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using WebTransportSystem.Models.TransportChooseAlgorithm.QLearning.Storage.Sql;
 
 namespace WebTransportSystem.Models.TransportChooseAlgorithm.QLearning
 {
@@ -38,6 +39,17 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm.QLearning
             {
                 busInfo,
                 carInfo
+            };
+        }
+
+        public static QFuncInfo CreateRandomQFuncInfo(string state)
+        {
+            var rnd = new Random();
+            return new QFuncInfo
+            {
+                State = state,
+                BusReward = rnd.NextDouble(),
+                CarReward = rnd.NextDouble()
             };
         }
     }

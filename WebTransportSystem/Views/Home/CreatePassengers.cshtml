@@ -33,9 +33,9 @@
         <p>
             Передаточная функция: <select name="func">
                 <option disabled>Выберите передаточную функцию</option>
-                <option selected value="0">Выбор лучшего по среднему уровню</option>
-                <option value="1">Отклонение от текущего уровня</option>
-                <option value="2">Используя данные обучения с подкреплением</option>
+                <option selected value="0">Алгоритм выбора, зависящий от среднего уровня соседей</option>
+                <option value="1">Алгоритм выбора, зависящий от отклонения от уровня соседей</option>
+                <option value="2">Алгоритм выбора, использующий данные обучения с подкреплением</option>
             </select>
         </p>
         <input class="btn btn-success" type="button" onclick="getSendBox(this.form)" value="Создать">

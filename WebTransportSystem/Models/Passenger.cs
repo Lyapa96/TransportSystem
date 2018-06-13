@@ -49,7 +49,7 @@ namespace WebTransportSystem.Models
 
         public void ChooseNextTransportType()
         {
-            PreviousState = new AgentState(Neighbors, Satisfaction, TransportType).GetAsString();
+            PreviousState = new AgentState(Neighbors, Satisfaction, TransportType).GetStringFormat();
             TransportType = PassengerBehaviour
                 .GetTransmissionFunc(TransmissionType)
                 .ChooseNextTransportType(Neighbors, TransportType, Satisfaction, DeviationValue);

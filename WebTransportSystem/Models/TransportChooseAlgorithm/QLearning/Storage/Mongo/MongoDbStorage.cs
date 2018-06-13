@@ -23,9 +23,9 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm.QLearning.Storage
             }
         }
 
-        public TransportType GetBestNextTransport(AgentState agentState)
+        public TransportType GetBestNextTransport(string currentAgentState)
         {
-            var findFluent = collection.Find(x => x.State == agentState.GetAsString()).FirstOrDefault();
+            var findFluent = collection.Find(x => x.State == currentAgentState).FirstOrDefault();
             if (findFluent == null)
             {
                 return PassengersHelper.GetRandomtransportType();
@@ -41,24 +41,24 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm.QLearning.Storage
             return best.Transport.ToEnum<TransportType>();
         }
 
-        public void SaveStateReward(string agentState, TransportType transportType, double reward)
+        public void SaveStateReward(string previousAgentState, string currentAgentState, double reward, TransportType previousAction)
         {
-            var item = collection.Find(x => x.State == agentState).FirstOrDefault();
+            var item = collection.Find(x => x.State == previousAgentState).FirstOrDefault();
             if (item != null)
             {
                 var allTransportTypes = item.AgentActions;
-                var current = allTransportTypes.Find(x => x.Transport == transportType.ToString());
+                var current = allTransportTypes.Find(x => x.Transport == previousAction.ToString());
                 current.AddReward(reward);
                 var updateDef = Builders<MongoAgentStateInfo>.Update.Set(o => o.AgentActions, allTransportTypes);
-                collection.UpdateOne(x => x.State == agentState, updateDef);
+                collection.UpdateOne(x => x.State == previousAgentState, updateDef);
             }
             else
             {
                 collection.InsertOne(
                     new MongoAgentStateInfo
                     {
-                        State = agentState,
-                        AgentActions = StorageHelpers.CreateFirstAgentActions(transportType, reward)
+                        State = previousAgentState,
+                        AgentActions = StorageHelpers.CreateFirstAgentActions(previousAction, reward)
                     });
             }
         }

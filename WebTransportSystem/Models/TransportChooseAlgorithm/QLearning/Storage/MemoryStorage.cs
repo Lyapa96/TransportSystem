@@ -9,12 +9,11 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm.QLearning.Storage
         private readonly Dictionary<string, List<QLearningTransportTypeInfo>> agentStateToTransportTypes =
             new Dictionary<string, List<QLearningTransportTypeInfo>>();
 
-        public TransportType GetBestNextTransport(AgentState agentState)
+        public TransportType GetBestNextTransport(string currentAgentState)
         {
-            var stringAgentState = agentState.GetAsString();
-            if (agentStateToTransportTypes.ContainsKey(stringAgentState))
+            if (agentStateToTransportTypes.ContainsKey(currentAgentState))
             {
-                var allTransportTypes = agentStateToTransportTypes[stringAgentState];
+                var allTransportTypes = agentStateToTransportTypes[currentAgentState];
                 return allTransportTypes
                     .OrderByDescending(x => x.GetAverageValue)
                     .First()
@@ -24,17 +23,17 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm.QLearning.Storage
             return PassengersHelper.GetRandomtransportType();
         }
 
-        public void SaveStateReward(string agentState, TransportType transportType, double reward)
+        public void SaveStateReward(string previousAgentState, string currentAgentState, double reward, TransportType previousAction)
         {
-            if (agentStateToTransportTypes.ContainsKey(agentState))
+            if (agentStateToTransportTypes.ContainsKey(previousAgentState))
             {
-                var allTransportTypes = agentStateToTransportTypes[agentState];
-                var current = allTransportTypes.Find(x => x.TransportType == transportType);
+                var allTransportTypes = agentStateToTransportTypes[previousAgentState];
+                var current = allTransportTypes.Find(x => x.TransportType == previousAction);
                 current.Rewards.Add(reward);
             }
             else
             {
-                agentStateToTransportTypes[agentState] = StorageHelpers.CreateFirstInfo(transportType, reward);
+                agentStateToTransportTypes[previousAgentState] = StorageHelpers.CreateFirstInfo(previousAction, reward);
             }
         }
     }

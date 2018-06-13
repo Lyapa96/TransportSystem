@@ -47,5 +47,16 @@ namespace WebTransportSystem.Utilities
             var rnd = new Random();
             return rnd.Next(2) == 1 ? TransportType.Bus : TransportType.Car;
         }
+
+        public static TransportType GetOtherRandomTransportType(TransportType transportType)
+        {
+            var randomTransportType = GetRandomtransportType();
+            while (transportType == randomTransportType)
+            {
+                randomTransportType = GetRandomtransportType();
+            }
+
+            return randomTransportType;
+        }
     }
 }

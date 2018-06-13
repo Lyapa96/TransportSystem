@@ -24,7 +24,7 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm.QLearning
             }
         }
 
-        public string GetAsString()
+        public string GetStringFormat()
         {
             var stringBuilder = new StringBuilder();
             foreach (var pair in neighborsTransportRelation.OrderBy(x => x.transportType))
