@@ -6,6 +6,15 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm
 {
     public class AveragingFunc : ITransmissionFunc
     {
+        private readonly double carAvailabilityProbability;
+        private readonly Random rnd;
+
+        public AveragingFunc(double carAvailabilityProbability)
+        {
+            rnd = new Random();
+            this.carAvailabilityProbability = carAvailabilityProbability;
+        }
+
         public TransportType ChooseNextTransportType(HashSet<Passenger> neighbors, TransportType currentTransportType, double currentSatisfaction, double deviationValue)
         {
             var typeTransportInfos = neighbors
@@ -18,12 +27,15 @@ namespace WebTransportSystem.Models.TransportChooseAlgorithm
 
             foreach (var info in typeTransportInfos)
                 if (info.Item2 > currentSatisfaction)
+                {
                     currentTransportType = info.Item1;
+                    currentSatisfaction = info.Item2;
+                }
+                    
 
             if (currentTransportType == TransportType.Car)
             {
-                var rnd = new Random();
-                currentTransportType = rnd.Next(1, 100) < 85 ? TransportType.Car : TransportType.Bus;
+                currentTransportType = rnd.NextDouble() < carAvailabilityProbability ? TransportType.Car : TransportType.Bus;
             }
 
             return currentTransportType;

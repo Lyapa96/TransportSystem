@@ -4,7 +4,7 @@ using WebTransportSystem.Models.TransportChooseAlgorithm.QLearning.Storage;
 
 namespace WebTransportSystem.Models
 {
-    public class PassengerBehaviour
+    public class PassengerBehaviour : IPassengerBehaviour
     {
         private readonly SatisfactionDeterminationAlgorithmFactory satisfactionDeterminationAlgorithmFactory;
         private readonly TransmissionFuncFactory transmissionFuncFactory;

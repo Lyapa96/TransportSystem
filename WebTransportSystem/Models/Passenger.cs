@@ -7,7 +7,7 @@ namespace WebTransportSystem.Models
     public class Passenger
     {
         public Passenger(
-            PassengerBehaviour passengerBehaviour,
+            IPassengerBehaviour passengerBehaviour,
             TransportType transportType,
             TransmissionType transmissionType,
             double qualityCoefficient,
@@ -29,7 +29,7 @@ namespace WebTransportSystem.Models
             AllQualityCoefficients = new List<double>();
         }
 
-        public PassengerBehaviour PassengerBehaviour { get; set; }
+        public IPassengerBehaviour PassengerBehaviour { get; set; }
 
         public double PersonalSatisfaction => 0.1;
         public int Number { get; set; }
